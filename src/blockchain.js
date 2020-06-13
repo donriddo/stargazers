@@ -34,8 +34,8 @@ class Blockchain {
      * Passing as a data `{data: 'Genesis Block'}`
      */
     async initializeChain() {
-        if( this.height === -1){
-            let block = new BlockClass.Block({data: 'Genesis Block'});
+        if (this.height === -1) {
+            let block = new BlockClass.Block({ data: 'Genesis Block' });
             await this._addBlock(block);
         }
     }
@@ -64,7 +64,26 @@ class Blockchain {
     _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-           
+            try {
+                // get chain height, add 1 to it and set it as the new block's height
+                block.height = 1 + await self.getChainHeight();
+                // get and set current timestamp on block
+                block.time = new Date().getTime().toString().slice(0, -3);
+                // if not genesis block, set previousBlockHash
+                if (block.height > 0) {
+                    block.previousBlockHash = self.chain[block.height - 1].hash;
+                }
+                // hash block and set as its hash
+                block.hash = SHA256(JSON.stringify(block)).toString();
+                // push new block onto the chain
+                this.chain.push(block);
+                // increment update chain's height by 1
+                this.height += 1;
+
+                resolve(block);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
@@ -78,7 +97,7 @@ class Blockchain {
      */
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
-            
+
         });
     }
 
@@ -102,7 +121,7 @@ class Blockchain {
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
-            
+
         });
     }
 
@@ -115,7 +134,7 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-           
+
         });
     }
 
@@ -128,7 +147,7 @@ class Blockchain {
         let self = this;
         return new Promise((resolve, reject) => {
             let block = self.chain.filter(p => p.height === height)[0];
-            if(block){
+            if (block) {
                 resolve(block);
             } else {
                 resolve(null);
@@ -142,11 +161,11 @@ class Blockchain {
      * Remember the star should be returned decoded.
      * @param {*} address 
      */
-    getStarsByWalletAddress (address) {
+    getStarsByWalletAddress(address) {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
-            
+
         });
     }
 
@@ -160,7 +179,7 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
-            
+
         });
     }
 
