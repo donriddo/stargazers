@@ -72,7 +72,7 @@ class Block {
             try {
                 // reject immediately if genesis block
                 if (self.height === 0) {
-                    reject(new Error('Cannot retrieve genesis block'));
+                    return reject(new Error('Cannot retrieve genesis block'));
                 }
 
                 // Getting the encoded data saved in the Block
