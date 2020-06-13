@@ -41,8 +41,11 @@ class Block {
             try {
                 // Save in auxiliary variable the current block hash
                 const currentBlockHash = self.hash;
+                // set hash to null before hashing
+                const selfClone = JSON.parse(JSON.stringify(self));
+                selfClone.hash = null;
                 // Recalculate the hash of the Block
-                const hash = SHA256(JSON.stringify(self)).toString();
+                const hash = SHA256(JSON.stringify(selfClone)).toString();
                 // Comparing if the hashes changed
                 if (hash !== currentBlockHash) {
                     // Returning the Block is not valid
@@ -70,10 +73,10 @@ class Block {
         const self = this;
         return new Promise((resolve, reject) => {
             try {
-                // reject immediately if genesis block
-                if (self.height === 0) {
-                    return reject(new Error('Cannot retrieve genesis block'));
-                }
+                // should reject immediately if genesis block
+                // if (self.height === 0) {
+                //     return reject(new Error('Cannot retrieve genesis block'));
+                // }
 
                 // Getting the encoded data saved in the Block
                 const data = this.body;

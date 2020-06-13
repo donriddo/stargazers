@@ -125,8 +125,8 @@ class Blockchain {
                 const sentTime = parseInt(message.split(':')[1]);
                 const currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
 
-                // check if time gap is more than 5 minutes = 300 seconds
-                if (currentTime - sentTime > 300) {
+                // check if time gap is more than or equal to 5 minutes = 300 seconds
+                if (currentTime - sentTime >= 300) {
                     return reject(new Error('verification time window elapased'));
                 }
 
@@ -137,7 +137,7 @@ class Blockchain {
 
                 // secure the digital asset with the address so we can prove ownership later
                 star.address = address;
-                const newBlock = await self._addBlock(star);
+                const newBlock = await self._addBlock(new BlockClass.Block(star));
                 resolve(newBlock);
             } catch (error) {
                 reject(error);
@@ -194,10 +194,10 @@ class Blockchain {
     getStarsByWalletAddress(address) {
         let self = this;
         let stars = [];
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 // scan through the blockchain
-                self.chain.forEach(async (block) => {
+                await Promise.all(self.chain.map(async (block) => {
                     // get block's decoded data which contains the address of owner
                     const star = await block.getBData();
                     // check if block has not been tampered
@@ -208,7 +208,7 @@ class Blockchain {
                         delete star.address;
                         stars.push(star);
                     }
-                });
+                }));
 
                 resolve(stars);
             } catch (error) {
