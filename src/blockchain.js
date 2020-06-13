@@ -127,12 +127,14 @@ class Blockchain {
 
                 // check if time gap is more than or equal to 5 minutes = 300 seconds
                 if (currentTime - sentTime >= 300) {
-                    return reject(new Error('verification time window elapased'));
+                    // return reject(new Error('verification time window elapased'));
+                    return resolve(null);
                 }
 
                 const isMessageValid = bitcoinMessage.verify(message, address, signature);
                 if (!isMessageValid) {
-                    return reject(new Error('message is not valid'));
+                    // return reject(new Error('message is not valid'));
+                    return resolve(null);
                 }
 
                 // secure the digital asset with the address so we can prove ownership later
