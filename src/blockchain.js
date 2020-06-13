@@ -155,11 +155,11 @@ class Blockchain {
             try {
                 const foundBlock = self.chain.filter(block => block.hash === hash)[0];
 
-                if (!foundBlock) {
-                    return reject(new Error('Block not found'));
+                if (foundBlock) {
+                    resolve(foundBlock);
+                } else {
+                    resolve(null);
                 }
-
-                resolve(foundBlock);
             } catch (error) {
                 reject(error);
             }
