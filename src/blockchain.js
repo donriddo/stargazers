@@ -76,9 +76,9 @@ class Blockchain {
                 // hash block and set as its hash
                 block.hash = SHA256(JSON.stringify(block)).toString();
                 // push new block onto the chain
-                this.chain.push(block);
+                self.chain.push(block);
                 // increment update chain's height by 1
-                this.height += 1;
+                self.height += 1;
 
                 resolve(block);
             } catch (error) {
@@ -121,7 +121,25 @@ class Blockchain {
     submitStar(address, message, signature, star) {
         let self = this;
         return new Promise(async (resolve, reject) => {
+            try {
+                const sentTime = parseInt(message.split(':')[1]);
+                const currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
 
+                // check if time gap is more than 5 minutes = 300 seconds
+                if (currentTime - sentTime > 300) {
+                    return reject(new Error('verification time window elapased'));
+                }
+
+                const isMessageValid = bitcoinMessage.verify(message, address, signature);
+                if (!isMessageValid) {
+                    return reject(new Error('message is not valid'));
+                }
+
+                const newBlock = await self._addBlock(star);
+                resolve(newBlock);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
