@@ -227,7 +227,43 @@ class Blockchain {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
+            try {
+                // scan through the blockchain
+                self.chain.forEach(async (block, index) => {
+                    let previousBlock;
+                    let chainIsBroken = false;
+                    // get previousBlockHash and confirm chain isn't broken
+                    if (index > 0) {
+                        previousBlock = self.chain[index - 1];
+                        chainIsBroken = previousBlock.hash !== block.previousBlockHash;
+                    }
+                    // check if block has not been tampered
+                    const blockStillValid = await block.validate();
 
+                    if (chainIsBroken && !blockStillValid) {
+                        errorLog.push(
+                            new Error(
+                                `Block at height ${block.height} is no longer valid 
+                                and chain is broken between blocks 
+                                at heights ${previousBlock.height} and ${block.height}`,
+                            ),
+                        );
+                    } else if (!chainIsBroken && !blockStillValid) {
+                        errorLog.push(new Error(`Block at height ${block.height} is no longer valid`));
+                    } else if (chainIsBroken && blockStillValid) {
+                        errorLog.push(
+                            new Error(
+                                `Chain is broken between blocks 
+                                at heights ${previousBlock.height} and ${block.height}`,
+                            ),
+                        );
+                    }
+                });
+
+                resolve(errorLog);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
