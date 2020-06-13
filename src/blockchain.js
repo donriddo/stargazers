@@ -199,7 +199,7 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             try {
                 // scan through the blockchain
-                await Promise.all(self.chain.map(async (block) => {
+                stars = await Promise.all(self.chain.map(async (block) => {
                     // get block's decoded data which contains the address of owner
                     const star = await block.getBData();
                     // check if block has not been tampered
@@ -208,11 +208,11 @@ class Blockchain {
                     if (star.address === address && blockStillValid) {
                         // remove address: not necessary to be shown to user
                         delete star.address;
-                        stars.push(star);
+                        return star;
                     }
                 }));
 
-                resolve(stars);
+                resolve(stars.filter(star => !!star));
             } catch (error) {
                 reject(error);
             }
