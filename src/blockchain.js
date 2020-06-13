@@ -195,7 +195,25 @@ class Blockchain {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
+            try {
+                // scan through the blockchain
+                self.chain.forEach(async (block) => {
+                    // get block's decoded data which contains the address of owner
+                    const star = await block.getBData();
+                    // check if block has not been tampered
+                    const blockStillValid = await block.validate();
 
+                    if (star.address === address && blockStillValid) {
+                        // remove address: not necessary to be shown to user
+                        delete star.address;
+                        stars.push(star);
+                    }
+                });
+
+                resolve(stars);
+            } catch (error) {
+                reject(error);
+            }
         });
     }
 
