@@ -135,6 +135,8 @@ class Blockchain {
                     return reject(new Error('message is not valid'));
                 }
 
+                // secure the digital asset with the address so we can prove ownership later
+                star.address = address;
                 const newBlock = await self._addBlock(star);
                 resolve(newBlock);
             } catch (error) {
